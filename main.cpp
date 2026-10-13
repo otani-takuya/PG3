@@ -1,78 +1,65 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <vector>
-#include <string>
-#include <algorithm>
+#include <iostream>
 
 using namespace std;
 
+// 関数テンプレート
+// 2つの値を比較して、小さい方を返す
+template <typename Type>
+Type Min(Type a, Type b) {
+
+	if (a < b) {
+		return a;
+	}
+
+	return b;
+}
+
 int main() {
 
-    // メールアドレスをvector<string>で宣言
-    vector<string> students = {
-        "k024g1017@g.neec.ac.jp",
-        "k024g0033@g.neec.ac.jp",
-        "k024g0057@g.neec.ac.jp",
-        "k024g0020@g.neec.ac.jp",
-        "k024g0109@g.neec.ac.jp",
-        "k024g1031@g.neec.ac.jp",
-        "k024g0004@g.neec.ac.jp",
-        "k024g0027@g.neec.ac.jp",
-        "k024g0058@g.neec.ac.jp",
-        "k022g0113@g.neec.ac.jp",
-        "k024g0007@g.neec.ac.jp",
-        "k024g0083@g.neec.ac.jp",
-        "k024g0110@g.neec.ac.jp",
-        "k024g0066@g.neec.ac.jp",
-        "k023g0029@g.neec.ac.jp",
-        "k024g1030@g.neec.ac.jp",
-        "k024g0106@g.neec.ac.jp",
-        "k024g0089@g.neec.ac.jp",
-        "k024g0101@g.neec.ac.jp",
-        "k024g0035@g.neec.ac.jp",
-        "k024g1025@g.neec.ac.jp",
-        "k024g0059@g.neec.ac.jp",
-        "k024g0006@g.neec.ac.jp",
-        "k023g0122@g.neec.ac.jp",
-        "k024g0028@g.neec.ac.jp",
-        "k024g1024@g.neec.ac.jp",
-        "k024g0108@g.neec.ac.jp",
-        "k024g0061@g.neec.ac.jp",
-        "k024g0104@g.neec.ac.jp",
-        "k024g0038@g.neec.ac.jp",
-        "k024g0032@g.neec.ac.jp",
-        "k024g0026@g.neec.ac.jp",
-        "k024g0001@g.neec.ac.jp",
-        "k024g0009@g.neec.ac.jp",
-        "k024g0112@g.neec.ac.jp",
-        "k024g0011@g.neec.ac.jp",
-        "k024g0085@g.neec.ac.jp",
-        "k024g0111@g.neec.ac.jp",
-        "k024g0045@g.neec.ac.jp",
-        "k024g0103@g.neec.ac.jp",
-        "k024g1002@g.neec.ac.jp",
-        "k024g0078@g.neec.ac.jp",
-        "k024g0044@g.neec.ac.jp",
-        "k024g0008@g.neec.ac.jp",
-        "k024g0075@g.neec.ac.jp",
-        "k024g0091@g.neec.ac.jp",
-        "k024g0064@g.neec.ac.jp",
-        "k024g0051@g.neec.ac.jp",
-        "k024g0093@g.neec.ac.jp",
-        "k024g0024@g.neec.ac.jp"
-    };
+	// =========================
+	// int型
+	// =========================
+	int intA;
+	int intB;
 
-    // 学籍番号順にソート
-    sort(students.begin(), students.end());
+	cout << "int型の1つ目の値を入力してください：";
+	cin >> intA;
 
-    // ソート後のみ表示
-    printf("=== 学籍番号順 ===\n");
+	cout << "int型の2つ目の値を入力してください：";
+	cin >> intB;
 
-    for (const string& student : students) {
-        printf("%s\n", student.c_str());
-    }
+	cout << "小さい値：" << Min(intA, intB) << endl;
 
-    system("pause");
 
-    return 0;
+	// =========================
+	// float型
+	// =========================
+	float floatA;
+	float floatB;
+
+	cout << "\nfloat型の1つ目の値を入力してください：";
+	cin >> floatA;
+
+	cout << "float型の2つ目の値を入力してください：";
+	cin >> floatB;
+
+	cout << "小さい値：" << Min(floatA, floatB) << endl;
+
+
+	// =========================
+	// double型
+	// =========================
+	double doubleA;
+	double doubleB;
+
+	cout << "\ndouble型の1つ目の値を入力してください：";
+	cin >> doubleA;
+
+	cout << "double型の2つ目の値を入力してください：";
+	cin >> doubleB;
+
+	cout << "小さい値：" << Min(doubleA, doubleB) << endl;
+
+
+	return 0;
 }
