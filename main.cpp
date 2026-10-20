@@ -1,137 +1,134 @@
+
 #include <iostream>
-
-using namespace std;
-
-// 一般的な賃金（時給）
-const int kNormalWage = 1226;
-
-// ================================
-// 一般的な賃金体系
-// ================================
-long long NormalSalary(int hours) {
-
-    // 時給 × 労働時間
-    return static_cast<long long>(kNormalWage) * hours;
-}
+#include <cstdlib>
+#include <ctime>
+#include <cstdio>
+#include <Windows.h>
 
 // ================================
-// 再帰的な賃金体系
-// 指定した時間の賃金を求める
+// 関数の宣言
 // ================================
-long long RecursiveWage(int hours) {
 
-    // 再帰処理の終了条件
-    // 1時間目の賃金は100円
-    if (hours == 1) {
-        return 100;
-    }
+// 結果を表示する関数
+void ShowResult(int roll, int userGuess);
 
-    // 前の時間の賃金 × 2 - 50円
-    // 自分自身の関数を呼び出して計算する
-    return RecursiveWage(hours - 1) * 2 - 50;
-}
-
-// ================================
-// 再帰的な賃金体系の合計金額
-// ================================
-long long RecursiveSalary(int hours) {
-
-    // 再帰処理の終了条件
-    if (hours == 1) {
-        return 100;
-    }
-
-    // 前の時間までの合計金額に
-    // 現在の時間の賃金を加算する
-    return RecursiveSalary(hours - 1)
-        + RecursiveWage(hours);
-}
+// 遅延実行する関数
+void DelayReveal(
+    void (*fn)(int, int),
+    unsigned int delayMs,
+    int roll,
+    int userGuess
+);
 
 // ================================
 // メイン関数
 // ================================
 int main() {
 
-    // 労働時間
-    int hours;
+    // 乱数の初期化
+    srand(static_cast<unsigned int>(time(nullptr)));
 
-    // 労働時間を入力
-    cout << "Enter working hours: ";
-    cin >> hours;
+    // サイコロの出目を生成（1～6）
+    int roll = rand() % 6 + 1;
 
-    // 入力された労働時間を確認
-    if (hours < 1 || hours > 50) {
-        cout << "Please enter a value between 1 and 50." << endl;
-        return 1;
+    // ユーザーの予想
+    int userGuess = 0;
+
+    // ================================
+    // ユーザー入力
+    // ================================
+
+    std::cout << "Guess the dice result!" << std::endl;
+    std::cout << "Odd  (1)" << std::endl;
+    std::cout << "Even (0)" << std::endl;
+
+    // 正しい値が入力されるまで繰り返す
+    while (true) {
+
+        std::cout << "Enter your guess (1 or 0): ";
+
+        // 入力値を取得
+        int inputResult = scanf_s("%d", &userGuess);
+
+        // 数値以外が入力された場合
+        if (inputResult != 1) {
+
+            std::cout << "Invalid input!" << std::endl;
+
+            // 入力バッファをクリア
+            int ch = 0;
+
+            while ((ch = getchar()) != '\n' && ch != EOF) {
+            }
+
+            if (ch == EOF) {
+                return 1;
+            }
+
+            continue;
+        }
+
+        // 1 または 0 なら入力完了
+        if (userGuess == 1 || userGuess == 0) {
+            break;
+        }
+
+        // 不正な値の場合
+        std::cout << "Please enter 1 or 0." << std::endl;
     }
 
     // ================================
-    // 問1
-    // 2つの賃金体系を計算して比較する
+    // 3秒後に結果を表示
     // ================================
-    cout << "\n===== Question 1 =====" << endl;
 
-    // 一般的な賃金体系の合計金額
-    long long normal = NormalSalary(hours);
+    std::cout << "\nRolling the dice..." << std::endl;
 
-    // 再帰的な賃金体系の合計金額
-    long long recursive = RecursiveSalary(hours);
+    DelayReveal(
+        &ShowResult,
+        3000,
+        roll,
+        userGuess
+    );
 
-    // 計算結果を表示
-    cout << "Normal Salary: " << normal << " yen" << endl;
-    cout << "Recursive Salary: " << recursive << " yen" << endl;
+    return 0;
+}
 
-    // 2つの賃金体系を比較
-    if (normal > recursive) {
+// ================================
+// 遅延実行関数
+// ================================
+void DelayReveal(
+    void (*fn)(int, int),
+    unsigned int delayMs,
+    int roll,
+    int userGuess
+) {
 
-        // 一般的な賃金体系の方が高い場合
-        cout << "Normal Salary is higher." << endl;
-    }
-    else if (normal < recursive) {
+    // 指定された時間だけ待機
+    Sleep(delayMs);
 
-        // 再帰的な賃金体系の方が高い場合
-        cout << "Recursive Salary is higher." << endl;
+    // コールバック関数を呼び出す
+    fn(roll, userGuess);
+}
+
+// ================================
+// 結果表示関数
+// ================================
+void ShowResult(int roll, int userGuess) {
+
+    // サイコロの出目を表示
+    std::cout << "\nDice result: " << roll << std::endl;
+
+    // 奇数なら1、偶数なら0
+    int result = roll % 2;
+
+    // 正解判定
+    if (result == userGuess) {
+
+        std::cout << "Correct!" << std::endl;
+
     }
     else {
 
-        // 2つの賃金体系が同じ場合
-        cout << "Both salaries are equal." << endl;
+        std::cout << "Incorrect!" << std::endl;
     }
-
-    // ================================
-    // 問2
-    // 再帰的な賃金体系の方が高くなる
-    // 労働時間を求める
-    // ================================
-    cout << "\n===== Question 2 =====" << endl;
-
-    // 1時間から50時間まで順番に計算する
-    for (int i = 1; i <= 50; i++) {
-
-        // 一般的な賃金体系の合計金額
-        long long normalTotal = NormalSalary(i);
-
-        // 再帰的な賃金体系の合計金額
-        long long recursiveTotal = RecursiveSalary(i);
-
-        // 再帰的な賃金体系の方が高いか確認
-        if (recursiveTotal > normalTotal) {
-
-            // 再帰的な賃金体系が高くなる時間を表示
-            cout << "Recursive Salary becomes higher after "
-                << i << " hours." << endl;
-
-            // それぞれの合計金額を表示
-            cout << "Normal Salary: "
-                << normalTotal << " yen" << endl;
-
-            cout << "Recursive Salary: "
-                << recursiveTotal << " yen" << endl;
-
-            // 条件を満たしたのでループを終了
-            break;
-        }
-    }
-
-    return 0;
 }
