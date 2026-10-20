@@ -9,9 +9,6 @@
 // 関数の宣言
 // ================================
 
-// 結果を表示する関数
-void ShowResult(int roll, int userGuess);
-
 // 遅延実行する関数
 void DelayReveal(
     void (*fn)(int, int),
@@ -25,7 +22,10 @@ void DelayReveal(
 // ================================
 int main() {
 
+    // ================================
     // 乱数の初期化
+    // ================================
+
     srand(static_cast<unsigned int>(time(nullptr)));
 
     // サイコロの出目を生成（1～6）
@@ -78,13 +78,38 @@ int main() {
     }
 
     // ================================
+    // ラムダ式で結果表示処理を定義
+    // ================================
+
+    auto showResult = [](int roll, int userGuess) {
+
+        // サイコロの出目を表示
+        std::cout << "\nDice result: " << roll << std::endl;
+
+        // 奇数なら1、偶数なら0
+        int result = roll % 2;
+
+        // 正解判定
+        if (result == userGuess) {
+
+            std::cout << "Correct!" << std::endl;
+
+        }
+        else {
+
+            std::cout << "Incorrect!" << std::endl;
+        }
+        };
+
+    // ================================
     // 3秒後に結果を表示
     // ================================
 
     std::cout << "\nRolling the dice..." << std::endl;
 
+    // ラムダ式をコールバック関数として渡す
     DelayReveal(
-        &ShowResult,
+        showResult,
         3000,
         roll,
         userGuess
@@ -108,27 +133,4 @@ void DelayReveal(
 
     // コールバック関数を呼び出す
     fn(roll, userGuess);
-}
-
-// ================================
-// 結果表示関数
-// ================================
-void ShowResult(int roll, int userGuess) {
-
-    // サイコロの出目を表示
-    std::cout << "\nDice result: " << roll << std::endl;
-
-    // 奇数なら1、偶数なら0
-    int result = roll % 2;
-
-    // 正解判定
-    if (result == userGuess) {
-
-        std::cout << "Correct!" << std::endl;
-
-    }
-    else {
-
-        std::cout << "Incorrect!" << std::endl;
-    }
 }
