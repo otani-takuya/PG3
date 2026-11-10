@@ -1,160 +1,104 @@
 
 #include <iostream>
-#include <Windows.h>
+#include <limits>
 
 // ================================
-// Enemyクラス
+// MinCalculatorクラステンプレート
 // ================================
-class Enemy {
+template <typename Type>
+class MinCalculator {
 public:
 
-    // 敵の状態
-    enum class State {
-        Search, // 認識
-        Shoot,  // 射撃
-        Reload  // 再装填
-    };
-
-    // メンバ関数ポインタの型
-    using StateFunction = void (Enemy::*)();
-
     // ================================
-    // コンストラクタ
+    // 2つの値を比較して小さい値を返す
     // ================================
-    Enemy() {
-        state_ = State::Search;
-        stateFunction_ = &Enemy::Search;
-    }
+    Type Min(Type a, Type b) {
 
-    // ================================
-    // 更新処理
-    // ================================
-    void Update() {
-
-        // 現在の状態に対応する
-        // メンバ関数を実行する
-        (this->*stateFunction_)();
-    }
-
-private:
-
-    // 現在の状態
-    State state_;
-
-    // 現在の状態処理を指す関数ポインタ
-    StateFunction stateFunction_;
-
-    // ================================
-    // 状態変更
-    // ================================
-    void ChangeState(State nextState) {
-
-        // 状態を変更
-        state_ = nextState;
-
-        // 状態に対応する関数を設定
-        switch (state_) {
-
-        case State::Search:
-            stateFunction_ = &Enemy::Search;
-            break;
-
-        case State::Shoot:
-            stateFunction_ = &Enemy::Shoot;
-            break;
-
-        case State::Reload:
-            stateFunction_ = &Enemy::Reload;
-            break;
+        if (a < b) {
+            return a;
         }
-    }
 
-    // ================================
-    // 認識状態
-    // ================================
-    void Search() {
-
-        std::cout
-            << "[Search] Enemy is searching..."
-            << std::endl;
-
-        // 認識処理の待機
-        Sleep(1000);
-
-        std::cout
-            << "Player detected!"
-            << std::endl;
-
-        // 射撃状態へ変更
-        ChangeState(State::Shoot);
-    }
-
-    // ================================
-    // 射撃状態
-    // ================================
-    void Shoot() {
-
-        std::cout
-            << "[Shoot] Enemy is shooting!"
-            << std::endl;
-
-        // 射撃処理の待機
-        Sleep(1000);
-
-        std::cout
-            << "Ammo is empty!"
-            << std::endl;
-
-        // 再装填状態へ変更
-        ChangeState(State::Reload);
-    }
-
-    // ================================
-    // 再装填状態
-    // ================================
-    void Reload() {
-
-        std::cout
-            << "[Reload] Enemy is reloading..."
-            << std::endl;
-
-        // 再装填処理の待機
-        Sleep(1000);
-
-        std::cout
-            << "Reload complete!"
-            << std::endl;
-
-        // 認識状態へ戻る
-        ChangeState(State::Search);
+        return b;
     }
 };
+
+// ================================
+// 入力と比較を行う関数テンプレート
+// ================================
+template <typename Type>
+void ExecuteMin(const char* typeName) {
+
+    // 入力する2つの値
+    Type a{};
+    Type b{};
+
+    // クラステンプレートのインスタンス生成
+    MinCalculator<Type> calculator;
+
+    // ================================
+    // ユーザー入力
+    // ================================
+    std::cout << "\n[" << typeName << "]\n";
+
+    std::cout << "Input first value: ";
+    while (!(std::cin >> a)) {
+        std::cin.clear();
+        std::cin.ignore(
+            std::numeric_limits<std::streamsize>::max(), '\n'
+        );
+        std::cout << "Invalid input. Try again: ";
+    }
+
+    std::cout << "Input second value: ";
+    while (!(std::cin >> b)) {
+        std::cin.clear();
+        std::cin.ignore(
+            std::numeric_limits<std::streamsize>::max(), '\n'
+        );
+        std::cout << "Invalid input. Try again: ";
+    }
+
+    // ================================
+    // 最小値の表示
+    // ================================
+    std::cout
+        << "Minimum value: "
+        << calculator.Min(a, b)
+        << std::endl;
+}
 
 // ================================
 // メイン関数
 // ================================
 int main() {
 
-    // 敵を生成
-    Enemy enemy;
-
     std::cout
-        << "Enemy State Machine Start!"
+        << "Min Class Template Start!"
         << std::endl;
 
-    // 状態遷移を9回実行
-    for (int i = 0; i < 9; i++) {
+    // ================================
+    // int型：3回比較
+    // ================================
+    for (int i = 0; i < 3; i++) {
+        ExecuteMin<int>("int");
+    }
 
-        std::cout
-            << "\n--------------------"
-            << std::endl;
+    // ================================
+    // float型：3回比較
+    // ================================
+    for (int i = 0; i < 3; i++) {
+        ExecuteMin<float>("float");
+    }
 
-        // 敵の更新
-        enemy.Update();
+    // ================================
+    // double型：3回比較
+    // ================================
+    for (int i = 0; i < 3; i++) {
+        ExecuteMin<double>("double");
     }
 
     std::cout
-        << "\nEnemy State Machine End!"
+        << "\nMin Class Template End!"
         << std::endl;
 
     return 0;
