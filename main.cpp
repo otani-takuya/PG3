@@ -3,16 +3,30 @@
 #include <limits>
 
 // ================================
+// 基底クラステンプレート
+// ================================
+template <typename Type>
+class Calculator {
+public:
+
+    // 仮想関数
+    virtual Type Calculate(Type a, Type b) = 0;
+
+    // 仮想デストラクタ
+    virtual ~Calculator() = default;
+};
+
+// ================================
 // MinCalculatorクラステンプレート
 // ================================
 template <typename Type>
-class MinCalculator {
+class MinCalculator : public Calculator<Type> {
 public:
 
     // ================================
     // 2つの値を比較して小さい値を返す
     // ================================
-    Type Min(Type a, Type b) {
+    Type Calculate(Type a, Type b) override {
 
         if (a < b) {
             return a;
@@ -32,8 +46,11 @@ void ExecuteMin(const char* typeName) {
     Type a{};
     Type b{};
 
-    // クラステンプレートのインスタンス生成
-    MinCalculator<Type> calculator;
+    // 派生クラスのインスタンス生成
+    MinCalculator<Type> minCalculator;
+
+    // 基底クラスのポインタで管理
+    Calculator<Type>* calculator = &minCalculator;
 
     // ================================
     // ユーザー入力
@@ -59,11 +76,11 @@ void ExecuteMin(const char* typeName) {
     }
 
     // ================================
-    // 最小値の表示
+    // ポリモーフィズムによる最小値計算
     // ================================
     std::cout
         << "Minimum value: "
-        << calculator.Min(a, b)
+        << calculator->Calculate(a, b)
         << std::endl;
 }
 
