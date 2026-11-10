@@ -3,85 +3,184 @@
 #include <limits>
 
 // ================================
-// 基底クラステンプレート
+// 基底クラス（抽象クラス）
 // ================================
-template <typename Type>
-class Calculator {
+class IShape {
 public:
 
-    // 仮想関数
-    virtual Type Calculate(Type a, Type b) = 0;
+    // 面積を求める純粋仮想関数
+    virtual void Size() = 0;
+
+    // 図形を描画する純粋仮想関数
+    virtual void Draw() = 0;
 
     // 仮想デストラクタ
-    virtual ~Calculator() = default;
+    virtual ~IShape() = default;
 };
 
 // ================================
-// MinCalculatorクラステンプレート
+// Circleクラス
 // ================================
-template <typename Type>
-class MinCalculator : public Calculator<Type> {
+class Circle : public IShape {
 public:
 
     // ================================
-    // 2つの値を比較して小さい値を返す
+    // コンストラクタ
     // ================================
-    Type Calculate(Type a, Type b) override {
+    Circle(int radius)
+        : radius_(radius) {}
 
-        if (a < b) {
-            return a;
-        }
+    // ================================
+    // 円の面積を求める
+    // ================================
+    void Size() override {
 
-        return b;
+        constexpr double kPi = 3.141592653589793;
+
+        double area =
+            kPi * radius_ * radius_;
+
+        std::cout
+            << "Circle Area: "
+            << area
+            << std::endl;
     }
+
+    // ================================
+    // 円をコンソールに描画する
+    // ================================
+    void Draw() override {
+
+        std::cout << "\n[Circle]\n";
+
+        // 縦横の座標を調べて円を描画
+        for (int y = -radius_; y <= radius_; y++) {
+
+            for (int x = -radius_; x <= radius_; x++) {
+
+                // コンソールの文字の縦横比を補正
+                double dx = x * 0.5;
+
+                // 円の内側か判定
+                if (dx * dx + y * y
+                    <= radius_ * radius_) {
+
+                    std::cout << "*";
+                }
+                else {
+
+                    std::cout << " ";
+                }
+            }
+
+            std::cout << std::endl;
+        }
+    }
+
+private:
+
+    // 円の半径
+    int radius_ = 0;
 };
 
 // ================================
-// 入力と比較を行う関数テンプレート
+// Rectangleクラス
 // ================================
-template <typename Type>
-void ExecuteMin(const char* typeName) {
-
-    // 入力する2つの値
-    Type a{};
-    Type b{};
-
-    // 派生クラスのインスタンス生成
-    MinCalculator<Type> minCalculator;
-
-    // 基底クラスのポインタで管理
-    Calculator<Type>* calculator = &minCalculator;
+class Rectangle : public IShape {
+public:
 
     // ================================
-    // ユーザー入力
+    // コンストラクタ
     // ================================
-    std::cout << "\n[" << typeName << "]\n";
+    Rectangle(int width, int height)
+        : width_(width),
+        height_(height) {}
 
-    std::cout << "Input first value: ";
-    while (!(std::cin >> a)) {
-        std::cin.clear();
-        std::cin.ignore(
-            std::numeric_limits<std::streamsize>::max(), '\n'
-        );
-        std::cout << "Invalid input. Try again: ";
-    }
+    // ================================
+    // 長方形の面積を求める
+    // ================================
+    void Size() override {
 
-    std::cout << "Input second value: ";
-    while (!(std::cin >> b)) {
-        std::cin.clear();
-        std::cin.ignore(
-            std::numeric_limits<std::streamsize>::max(), '\n'
-        );
-        std::cout << "Invalid input. Try again: ";
+        int area = width_ * height_;
+
+        std::cout
+            << "Rectangle Area: "
+            << area
+            << std::endl;
     }
 
     // ================================
-    // ポリモーフィズムによる最小値計算
+    // 長方形をコンソールに描画する
     // ================================
-    std::cout
-        << "Minimum value: "
-        << calculator->Calculate(a, b)
-        << std::endl;
+    void Draw() override {
+
+        std::cout << "\n[Rectangle]\n";
+
+        // 高さの分だけ繰り返す
+        for (int y = 0; y < height_; y++) {
+
+            // 幅の分だけ繰り返す
+            for (int x = 0; x < width_; x++) {
+
+                std::cout << "* ";
+            }
+
+            std::cout << std::endl;
+        }
+    }
+
+private:
+
+    // 長方形の幅と高さ
+    int width_ = 0;
+    int height_ = 0;
+};
+
+// ================================
+// 正の整数を入力する関数
+// ================================
+int InputPositiveInt(const char* message) {
+
+    int value = 0;
+
+    while (true) {
+
+        std::cout << message;
+
+        if (std::cin >> value && value > 0) {
+
+            return value;
+        }
+
+        // 入力エラーを解除
+        std::cin.clear();
+
+        // 入力バッファをクリア
+        std::cin.ignore(
+            std::numeric_limits<std::streamsize>::max(),
+            '\n'
+        );
+
+        std::cout
+            << "Invalid input. Try again.\n";
+    }
+}
+
+// ================================
+// 図形の処理を実行する関数
+// ================================
+void ExecuteShape(IShape* shape) {
+
+    // ポインタが有効か確認
+    if (shape == nullptr) {
+        return;
+    }
+
+    // 面積を計算
+    shape->Size();
+
+    // 図形を描画
+    shape->Draw();
 }
 
 // ================================
@@ -90,32 +189,56 @@ void ExecuteMin(const char* typeName) {
 int main() {
 
     std::cout
-        << "Min Class Template Start!"
+        << "Shape Program Start!"
         << std::endl;
 
     // ================================
-    // int型：3回比較
+    // Circleの処理
     // ================================
-    for (int i = 0; i < 3; i++) {
-        ExecuteMin<int>("int");
-    }
+    std::cout << "\n--- Circle ---\n";
+
+    // 半径を入力
+    int radius = InputPositiveInt(
+        "Input radius: "
+    );
+
+    // Circleのインスタンス生成
+    Circle circle(radius);
+
+    // 基底クラスのポインタで管理
+    IShape* circleShape = &circle;
+
+    // 面積計算と描画
+    ExecuteShape(circleShape);
 
     // ================================
-    // float型：3回比較
+    // Rectangleの処理
     // ================================
-    for (int i = 0; i < 3; i++) {
-        ExecuteMin<float>("float");
-    }
+    std::cout << "\n--- Rectangle ---\n";
+
+    // 幅と高さを入力
+    int width = InputPositiveInt(
+        "Input width: "
+    );
+
+    int height = InputPositiveInt(
+        "Input height: "
+    );
+
+    // Rectangleのインスタンス生成
+    Rectangle rectangle(width, height);
+
+    // 基底クラスのポインタで管理
+    IShape* rectangleShape = &rectangle;
+
+    // 面積計算と描画
+    ExecuteShape(rectangleShape);
 
     // ================================
-    // double型：3回比較
+    // 終了処理
     // ================================
-    for (int i = 0; i < 3; i++) {
-        ExecuteMin<double>("double");
-    }
-
     std::cout
-        << "\nMin Class Template End!"
+        << "\nShape Program End!"
         << std::endl;
 
     return 0;
